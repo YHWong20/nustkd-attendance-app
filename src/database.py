@@ -1,15 +1,14 @@
-from datetime import datetime
 import os
 import sys
-
+from datetime import datetime, timezone, timedelta
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import DuplicateKeyError
 from src.member import Member
 
 
-# ATTENDANCE = {}
-today = datetime.today().day
+sgt = timezone(timedelta(hours=8))
+today = datetime.now(sgt).day
 JSON_PATH = "local/attendance.json"
 
 # Connect to MongoDB Atlas
