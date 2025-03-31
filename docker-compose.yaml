@@ -1,0 +1,10 @@
+version: '3'
+services:
+  nustkd-attendance-app-frontend:
+    image: nustkd-attendance-app-frontend:latest
+    ports:
+      - 5173:5173
+  nustkd-attendance-app-backend:
+    image: nustkd-attendance-app-backend:latest
+    ports:
+      - 8080:8080
