@@ -37,7 +37,8 @@ def add_entry(name, status):
     }
 
     try:
-        collection.insert_one(entry)
-        print(f"Key {entry['_id']} added!")
+        response = collection.insert_one(entry)
+        assert response.acknowledged
+        print(f"Key {response.inserted_id} added!")
     except DuplicateKeyError:
         print(f"Duplicate key {entry['_id']} entered - ignoring...")
