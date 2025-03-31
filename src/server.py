@@ -7,7 +7,7 @@ import attendance
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173"
+    "https://nustkd-attendance-app-e897e90f665b.herokuapp.com"
 ]
 
 app.add_middleware(
