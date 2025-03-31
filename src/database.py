@@ -1,10 +1,12 @@
 from datetime import datetime
+import os
+import sys
+
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import DuplicateKeyError
-from member import Member
-import os
-import sys
+from src.member import Member
+
 
 # ATTENDANCE = {}
 today = datetime.today().day
@@ -25,7 +27,7 @@ db = client["attendance-dev"]
 collection = db[str(today)]  # A collection for each training date
 
 
-def add(name, status):
+def add_entry(name, status):
     member = Member(name, status)
 
     entry = {

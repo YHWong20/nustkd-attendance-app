@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NUS Taekwondo Attendance App</title>
+  </head>
+
+  <body>
+    <h1>NUS Taekwondo Attendance App</h1>
+
+    <input type="text" id="name" placeholder="Enter the member's name">
+
+    <p>Member's status:</p>
+    <label>
+        <input type="radio" name="status" value="Regular"> Regular Student
+    </label>
+    <label>
+        <input type="radio" name="status" value="Alumni"> Alumni
+    </label>
+    <label>
+        <input type="radio" name="status" value="Exchange"> Exchange Student
+    </label>
+  
+    <button onclick="submitForm()">Submit</button>
+
+    <script>
+      function submitForm() {
+        let name = document.getElementById("name").value;
+        let status = document.querySelector('input[name="status"]:checked');
+        
+        if (!name || !status) {
+          alert("Please enter a name and select a status.");
+          return;
+        }
+        
+        fetch("/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name, status: status.value })
+        })
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(error => console.error("Error:", error));
+        
+        alert("Name submitted!");
+      }
+    </script>
+  </body>
+</html>

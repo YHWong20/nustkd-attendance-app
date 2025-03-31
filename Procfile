@@ -1,1 +1,1 @@
-web: sh heroku-init.sh
+web: gunicorn run:app
