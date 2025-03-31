@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     allowedHosts: [
-      "nustkd-attendance-app-e897e90f665b.herokuapp.com/"
+      "nustkd-attendance-app-e897e90f665b.herokuapp.com"
     ]
   },
   plugins: [svelte()],
