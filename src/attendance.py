@@ -3,7 +3,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import DuplicateKeyError
 from member import Member
-import json
+import os
 import sys
 
 # ATTENDANCE = {}
@@ -11,7 +11,7 @@ today = datetime.today().day
 JSON_PATH = "local/attendance.json"
 
 # Connect to MongoDB Atlas
-MONGO_URI = "mongodb+srv://wongyihao2000:8P3Q67Vz82BmZ1ju@nustkd-attendance.7xhbpc4.mongodb.net/?retryWrites=true&w=majority&appName=nustkd-attendance"
+MONGO_URI = os.environ['MONGODB_URI']
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 
 try:
