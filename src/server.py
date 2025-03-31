@@ -7,7 +7,8 @@ import attendance
 app = FastAPI()
 
 origins = [
-    "https://nustkd-attendance-app-e897e90f665b.herokuapp.com"
+    "https://nustkd-attendance-app-e897e90f665b.herokuapp.com",
+    f"http://localhost:{os.environ['PORT']}"
 ]
 
 app.add_middleware(
@@ -30,4 +31,4 @@ async def submit(data: dict):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="localhost", port=8080)
