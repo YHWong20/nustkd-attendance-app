@@ -1,4 +1,4 @@
-from flask import Flask, send_file, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from src.database import add_entry
 
 app = Flask(__name__)
@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def home():
-    return send_file("src/static/index.html")
+    return render_template("index.html")
 
 
 @app.route("/submit", methods=["POST"])

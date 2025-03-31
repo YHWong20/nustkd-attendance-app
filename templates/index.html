@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NUS Taekwondo Attendance App</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
+  </head>
+
+  <body>
+    <div class="container">
+      <img height=150px; width=auto; src="/static/teamnus.jpg"/>
+      <h1>NUS Taekwondo Attendance App</h1>
+
+      <input type="text" id="name" placeholder="Enter the member's name">
+
+      <p>Member's status:</p>
+      <div class="status-buttons">
+        <button class="status-btn" data-value="Regular">Regular Student</button>
+        <button class="status-btn" data-value="Alumni">Alumni</button>
+        <button class="status-btn" data-value="Exchange">Exchange Student</button>
+      </div>
+
+      <button id="submit-btn" onclick="submitForm()">Submit</button>
+      <div id="response-message"></div>
+    </div>
+
+    <script>
+      let selectedStatus = "";
+
+      document.querySelectorAll(".status-btn").forEach(button => {
+        button.addEventListener("click", function() {
+          document.querySelectorAll(".status-btn").forEach(btn => btn.classList.remove("selected"));
+          this.classList.add("selected");
+          selectedStatus = this.getAttribute("data-value");
+        });
+      });
+
+      document.getElementById("submit-btn").addEventListener("click", function() {
+        let name = document.getElementById("name").value;
+        let responseMessage = document.getElementById("response-message");
+
+        if (!name || !selectedStatus) {
+          responseMessage.innerHTML = "<span class='error'>❌ Please enter a name and select a status.</span>";
+          return;
+        }
+
+        fetch("/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name, status: selectedStatus })
+        })
+        .then(response => response.json())
+        .then(result => {
+          responseMessage.innerHTML = `<span class='success'>✅ Attendance submitted for ${name}!</span>`;
+          document.getElementById("name").value = '';
+        }).catch(error => {
+          responseMessage.innerHTML = `<span class='error'>❌ Error submitting name.</span>`;
+        }).finally(() => {
+          function clearResponse() {
+            responseMessage.innerHTML = "";
+          }
+          setTimeout(clearResponse, 1500);
+        });
+      });
+    </script>
+  </body>
+</html>
