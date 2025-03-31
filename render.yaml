@@ -4,10 +4,10 @@ services:
     runtime: docker
     plan: free
     region: singapore
-    dockerFilePath: ./front.dockerfile
+    dockerfilePath: ./front.dockerfile
   - type: web
     name: nustkd-attendance-app-backend
     runtime: docker
     plan: free
     region: singapore
-    dockerFilePath: ./back.dockerfile
+    dockerfilePath: ./back.dockerfile
