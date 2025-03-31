@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "python3 src/server.py && vite --port $PORT",
+    "start": "vite --port $PORT",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
