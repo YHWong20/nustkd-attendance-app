@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Export Attendance</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Export Attendance</h1>
+
+      <label for="export-date">Enter the day of the month:</label>
+      <input type="number" id="export-date" min="1" max="31" placeholder="Enter day (e.g., 15)">
+
+      <div class="button-container">
+        <button id="export-submit">Export</button>
+        <div id="export-message"></div>
+
+        <button id="back-btn" onclick="window.location.href='/'">Back to Home</button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("export-submit").addEventListener("click", function() {
+        let date = document.getElementById("export-date").value;
+        let exportMessage = document.getElementById("export-message");
+
+        if (!date || date < 1 || date > 31) {
+          exportMessage.innerHTML = "<span class='error'>❌ Please enter a valid day (1-31).</span>";
+          return;
+        }
+
+        fetch(`/export?date=${date}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .then(result => {
+          exportMessage.innerHTML = `<span class='success'>✅ Export started!</span>`;
+        }).finally(() => {
+          function clearResponse() {
+            exportMessage.innerHTML = "";
+          }
+          setTimeout(clearResponse, 1500);
+        });
+      });
+    </script>
+  </body>
+</html>

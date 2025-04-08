@@ -41,3 +41,13 @@ def add_entry(name, status):
         print(f"Key {response.inserted_id} added!")
     except DuplicateKeyError:
         print(f"Duplicate key {entry['_id']} entered - ignoring...")
+
+
+def get_entries(collection_name):
+    get_collection = db[collection_name]
+    cursor = get_collection.find({})
+    results = []
+    for doc in cursor:
+        results.append(doc)
+
+    return results
