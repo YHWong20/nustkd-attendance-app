@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Today's Attendance</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
+  </head>
+
+  <body>
+    <div class="container">
+    {% if day_month %}
+        <h1>Today's Attendance ({{ day_month }})</h1>
+    {% else %}
+        <h1>Today's Attendance</h1>
+    {% endif %}
+
+    {% if not students and not alumni and not exchangers %}
+        No attendance registered for today.
+    {% endif %}
+
+    {% if students %}
+        <h3>Students</h3>
+        {{ students | safe }}
+    {% endif %}
+
+    {% if alumni %}
+        <h3>Alumni</h3>
+        {{ alumni | safe }}
+    {% endif %}
+
+    {% if exchangers %}
+        <h3>Exchangers</h3>
+        {{ exchangers | safe }}
+    {% endif %}
+    <div class="button-container">
+        <hr class="divider">
+        <button id="back-btn" onclick="window.location.href='/'">Back to Home</button>
+    </div>
+    </div>
+  </body>
+</html>

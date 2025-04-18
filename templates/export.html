@@ -15,15 +15,16 @@
       <input type="number" id="export-date" min="1" max="31" placeholder="Enter day (e.g., 15)">
 
       <div class="button-container">
-        <button id="export-submit">Export</button>
+        <button id="export-telegram">Export to Telegram</button>
+        <button id="export-excel">Export to Excel</button>
         <div id="export-message"></div>
-
+        <hr class="divider">
         <button id="back-btn" onclick="window.location.href='/'">Back to Home</button>
       </div>
     </div>
 
     <script>
-      document.getElementById("export-submit").addEventListener("click", function() {
+      document.getElementById("export-telegram").addEventListener("click", function() {
         let date = document.getElementById("export-date").value;
         let exportMessage = document.getElementById("export-message");
 
@@ -32,7 +33,31 @@
           return;
         }
 
-        fetch(`/export?date=${date}`, {
+        fetch(`/export?date=${date}&telegram=1`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .then(result => {
+          exportMessage.innerHTML = `<span class='success'>✅ Export started!</span>`;
+        }).finally(() => {
+          function clearResponse() {
+            exportMessage.innerHTML = "";
+          }
+          setTimeout(clearResponse, 1500);
+        });
+      });
+
+      document.getElementById("export-excel").addEventListener("click", function() {
+        let date = document.getElementById("export-date").value;
+        let exportMessage = document.getElementById("export-message");
+
+        if (!date || date < 1 || date > 31) {
+          exportMessage.innerHTML = "<span class='error'>❌ Please enter a valid day (1-31).</span>";
+          return;
+        }
+
+        fetch(`/export?date=${date}&telegram=0`, {
           method: "GET",
           headers: { "Content-Type": "application/json" }
         })
