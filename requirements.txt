@@ -2,3 +2,5 @@ flask
 gunicorn
 pymongo
 openpyxl
+aiogram
+pydrive2
