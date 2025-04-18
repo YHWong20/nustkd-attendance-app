@@ -1,3 +1,7 @@
+"""
+MongoDB Database utilities
+"""
+
 import os
 import sys
 from datetime import datetime, timezone, timedelta
@@ -9,24 +13,30 @@ from src.member import Member
 
 sgt = timezone(timedelta(hours=8))
 today = datetime.now(sgt).day
-JSON_PATH = "local/attendance.json"
 
 # Connect to MongoDB Atlas
-MONGO_URI = os.environ['MONGODB_URI']
-client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+MONGO_URI = os.environ["MONGODB_URI"]
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 
 try:
-    client.admin.command('ping')
+    client.admin.command("ping")
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e)
     sys.exit(1)
 
-db = client["attendance-dev"]
+db = client["attendance-prod"]
 collection = db[str(today)]  # A collection for each training date
 
 
 def add_entry(name, status):
+    """
+    Add entry to DB.
+
+    Args:
+        name (str): Member name.
+        status (str): Member status.
+    """
     member = Member(name, status)
 
     entry = {
@@ -44,6 +54,15 @@ def add_entry(name, status):
 
 
 def get_entries(collection_name):
+    """
+    Get entries from DB.
+
+    Args:
+        collection_name (str): Collection to retrieve.
+
+    Returns:
+        list: List of entries in collection.
+    """
     get_collection = db[collection_name]
     cursor = get_collection.find({})
     results = []
