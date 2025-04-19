@@ -3,9 +3,12 @@ Attendance Excel export utilities
 """
 
 from datetime import datetime, timezone, timedelta
+import logging
 import openpyxl
 from src.gdrive import download_file, upload_file
 from src.telegram import send_message
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
 
 # Row and column numbers of interest in excel template
 DATE_ROW = 8
@@ -28,10 +31,10 @@ def get_target_column(ws, export_date):
     """
     for col in range(LEFT_DATE_LIMIT, RIGHT_DATE_LIMIT):
         if int(ws.cell(row=DATE_ROW, column=col).value) == export_date:
-            print(f"Target column for date {export_date} is column {col}.")
+            logging.info("Target column for date %s is column %s.", export_date, col)
             return col
 
-    print(f"Date {export_date} not found in the sheet!")
+    logging.warning("Date %s not found in the sheet!", export_date)
     return None
 
 
@@ -48,6 +51,7 @@ def zero_missing_members(ws, col_no):
         if not cell_value or int(cell_value) != 1:
             ws.cell(row=row, column=col_no, value=0)
 
+    logging.info("Zeroed empty cells.")
     return ws
 
 
@@ -61,14 +65,20 @@ def insert_entries(export_date, entries):
     """
     # Load template from google drive
     template = download_file()
-    wb = openpyxl.load_workbook(template)
-    ws = wb["Active Members"]
+
+    try:
+        wb = openpyxl.load_workbook(template)
+        ws = wb["Active Members"]
+        logging.info("Workbook loaded.")
+    except Exception as e:
+        logging.error("Workbook could not be loaded. Error: %s", e)
+        raise e
 
     target_date = int(export_date)
     target_column = get_target_column(ws, target_date)
 
     if not target_column:
-        print(f"Target column {target_column} not found in Attendance sheet.")
+        logging.warning("Target column %s not found in Attendance sheet.", target_column)
         return
 
     attendance_names = list(map(lambda x: x["name"], entries))
@@ -86,15 +96,15 @@ def insert_entries(export_date, entries):
         if len(matching_rows) == 1:
             row_to_update = matching_rows[0]
             ws.cell(row=row_to_update, column=target_column, value=1)
-            print(f"Marked {name} as present on {target_date} (Row {row_to_update}).")
+            logging.info("Marked %s as present on %s (Row %s).", name, target_date, row_to_update)
         elif len(matching_rows) > 1:
             # Duplicate name entry
             # TODO: possible utilise member status to de-duplicate names
-            print(f"Skipping {name}, Found multiple matches: {matching_rows}")
+            logging.warning("Skipping %s, Found multiple matches: %s", name, matching_rows)
             duplicate_names.append(name)
         else:
             # Name not found
-            print(f"{name} not found.")
+            logging.warning("%s not found.", name)
             missing_names.append(name)
 
     ws = zero_missing_members(ws, target_column)
@@ -105,7 +115,13 @@ def insert_entries(export_date, entries):
     day_month = f"{export_date}/{month}"
     send_message(day_month, duplicates=duplicate_names, missing=missing_names)
 
-    # Save and upload excel sheet to google drive
-    wb.save(template)
-    wb.close()
+    try:
+        # Save and upload excel sheet to google drive
+        wb.save(template)
+        wb.close()
+        logging.info("Workbook saved.")
+    except Exception as e:
+        logging.error("Workbook could not be saved. Error: %s", e)
+        raise e
+
     upload_file()

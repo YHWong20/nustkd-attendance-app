@@ -3,10 +3,13 @@ Google drive utilities
 """
 
 import json
+import logging
 import os
 from datetime import datetime, timezone, timedelta
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
 
 # Save json credentials locally
 SERVICE_ACCOUNT_JSON = os.environ["SERVICE_ACCOUNT_JSON"]
@@ -39,11 +42,21 @@ def get_file():
     year = datetime.now(sgt).strftime("%y")
     title = f"{month}{year}_Attendance_Taekwondo.xlsx"
 
-    # Query google drive for file id
-    query = {"q": f"title='{title}'"}
-    files = drive.ListFile(query).GetList()
+    try:
+        # Query google drive for file id
+        query = {"q": f"title='{title}'"}
+        files = drive.ListFile(query).GetList()
 
-    return (files[0]["id"], title)
+        if not files:
+            logging.error("File %s not found.", title)
+            raise FileNotFoundError(f"File {title} not found in Google Drive.")
+
+        file_id = files[0]["id"]
+        logging.info("File %s found. File id: %s", title, file_id)
+        return (file_id, title)
+    except Exception as e:
+        logging.error("Failed to get file from Google Drive. Error: %s", e)
+        raise e
 
 
 def download_file():
@@ -56,11 +69,14 @@ def download_file():
     (file_id, title) = get_file()
     local_path = f"local_{title}"
 
-    f = drive.CreateFile({"id": file_id})
-    f.GetContentFile(local_path)
-    print("File downloaded from google drive.")
-
-    return local_path
+    try:
+        f = drive.CreateFile({"id": file_id})
+        f.GetContentFile(local_path)
+        logging.info("File downloaded from Google Drive.")
+        return local_path
+    except Exception as e:
+        logging.error("Failed to download file from Google Drive. Error: %s", e)
+        raise e
 
 
 def upload_file():
@@ -70,7 +86,11 @@ def upload_file():
     (file_id, title) = get_file()
     local_path = f"local_{title}"
 
-    f = drive.CreateFile({"id": file_id})
-    f.SetContentFile(local_path)
-    f.Upload()
-    print("File uploaded to google drive.")
+    try:
+        f = drive.CreateFile({"id": file_id})
+        f.SetContentFile(local_path)
+        f.Upload()
+        logging.info("File uploaded to Google Drive.")
+    except Exception as e:
+        logging.error("Failed to upload file to Google Drive. Error: %s", e)
+        raise e

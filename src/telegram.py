@@ -4,10 +4,12 @@ Telegram bot utilities
 
 import asyncio
 import os
+import logging
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 GROUP_CHAT_ID = int(os.environ["GROUP_CHAT_ID"])
@@ -26,8 +28,10 @@ def send_message(day_month, entries=None, duplicates=None, missing=None):
     """
     formatted_message = None
     if entries:
+        logging.info("Generating attendance message.")
         formatted_message = generate_attendance_message(day_month, entries)
     elif duplicates or missing:
+        logging.info("Generating export status message.")
         formatted_message = generate_export_message(day_month, duplicates, missing)
 
     if formatted_message:
@@ -45,10 +49,6 @@ def generate_attendance_message(day_month, entries):
     Returns:
         str: Formatted attendance message.
     """
-    if not entries:
-        print("No name entries exist.")
-        return None
-
     students = ""
     alumni = ""
     exchangers = ""
@@ -61,6 +61,7 @@ def generate_attendance_message(day_month, entries):
         elif entry["status"] == "Exchange":
             exchangers += f"{entry['name']}\n"
 
+    logging.info("Formatted attendance message generated.")
     return (
         f"Attendance for {day_month}:\n\n"
         "<b>Students</b>\n"
@@ -93,6 +94,7 @@ def generate_export_message(day_month, duplicates, missing):
     for miss in missing:
         _missing += f"{miss}\n"
 
+    logging.info("Formatted export status message generated.")
     return (
         f"Attendance for {day_month} exported to Google Drive.\n\n"
         "<b>Missing Members</b>\n"
@@ -109,5 +111,9 @@ async def send_formatted_message(message):
     Args:
         message (str): Formatted message to send.
     """
-    async with bot:
-        await bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
+    try:
+        async with bot:
+            await bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
+    except Exception as e:
+        logging.error("Error sending message. Error: %s", e)
+        raise e
