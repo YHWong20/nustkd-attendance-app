@@ -25,16 +25,25 @@ gauth = GoogleAuth(settings=settings)
 gauth.ServiceAuth()
 drive = GoogleDrive(gauth)
 
-# Get attendance sheet file id for current month
-sgt = timezone(timedelta(hours=8))
-month = datetime.now(sgt).strftime("%b")
-year = datetime.now(sgt).strftime("%y")
-TITLE = f"{month}{year}_Attendance_Taekwondo.xlsx"
-LOCAL_PATH = f"local_{TITLE}"
 
-query = {"q": f"title='{TITLE}'"}
-files = drive.ListFile(query).GetList()
-file_id = files[0]["id"]
+def get_file():
+    """
+    Get attendance file for the current month.
+
+    Returns:
+        (int, str): Tuple of attendance file id and file name
+    """
+    # Get attendance sheet file id for current month
+    sgt = timezone(timedelta(hours=8))
+    month = datetime.now(sgt).strftime("%b")
+    year = datetime.now(sgt).strftime("%y")
+    title = f"{month}{year}_Attendance_Taekwondo.xlsx"
+
+    # Query google drive for file id
+    query = {"q": f"title='{title}'"}
+    files = drive.ListFile(query).GetList()
+
+    return (files[0]["id"], title)
 
 
 def download_file():
@@ -44,17 +53,24 @@ def download_file():
     Returns:
         str: Local file path for downloaded file.
     """
+    (file_id, title) = get_file()
+    local_path = f"local_{title}"
+
     f = drive.CreateFile({"id": file_id})
-    f.GetContentFile(LOCAL_PATH)
+    f.GetContentFile(local_path)
     print("File downloaded from google drive.")
-    return LOCAL_PATH
+
+    return local_path
 
 
 def upload_file():
     """
     Upload local file to google drive.
     """
+    (file_id, title) = get_file()
+    local_path = f"local_{title}"
+
     f = drive.CreateFile({"id": file_id})
-    f.SetContentFile(LOCAL_PATH)
+    f.SetContentFile(local_path)
     f.Upload()
     print("File uploaded to google drive.")

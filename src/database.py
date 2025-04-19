@@ -3,30 +3,37 @@ MongoDB Database utilities
 """
 
 import os
-import sys
 from datetime import datetime, timezone, timedelta
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo.errors import DuplicateKeyError
 from src.member import Member
 
-
-sgt = timezone(timedelta(hours=8))
-today = datetime.now(sgt).day
-
-# Connect to MongoDB Atlas
 MONGO_URI = os.environ["MONGODB_URI"]
 client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 
 try:
     client.admin.command("ping")
-    print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e)
-    sys.exit(1)
 
 db = client["attendance-prod"]
-collection = db[str(today)]  # A collection for each training date
+
+
+def get_db_collection():
+    """
+    Get MongoDB collection for the current training day.
+
+    Returns:
+        Collection: MongoDB collection for the current training day.
+    """
+    # Get current day
+    sgt = timezone(timedelta(hours=8))
+    today = datetime.now(sgt).day
+
+    # Collection for today's training date
+    collection = db[str(today)]
+    return collection
 
 
 def add_entry(name, status):
@@ -37,6 +44,7 @@ def add_entry(name, status):
         name (str): Member name.
         status (str): Member status.
     """
+    collection = get_db_collection()
     member = Member(name, status)
 
     entry = {

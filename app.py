@@ -10,12 +10,6 @@ from src.telegram import send_message
 
 app = Flask(__name__)
 
-# Set today's date
-sgt = timezone(timedelta(hours=8))
-current_day = datetime.now(sgt).day
-current_month = datetime.now(sgt).month
-DAY_MONTH = f"{current_day}/{current_month}"
-
 
 @app.route("/", methods=["GET"])
 def home():
@@ -62,10 +56,16 @@ def export():
     export_date = request.args.get("date")
     entries = get_entries(export_date)
 
+    # Get current date
+    sgt = timezone(timedelta(hours=8))
+    current_day = datetime.now(sgt).day
+    current_month = datetime.now(sgt).month
+    day_month = f"{current_day}/{current_month}"
+
     telegram_bit = request.args.get("telegram")
     if int(telegram_bit) == 1:
         # Export attendance list to Telegram
-        send_message(DAY_MONTH, entries)
+        send_message(day_month, entries)
     else:
         # Export attendance list to Excel sheet
         insert_entries(export_date, entries)
@@ -81,6 +81,12 @@ def today():
     Returns:
         Rendered HTML template.
     """
+    # Get current date
+    sgt = timezone(timedelta(hours=8))
+    current_day = datetime.now(sgt).day
+    current_month = datetime.now(sgt).month
+    day_month = f"{current_day}/{current_month}"
+
     entries = get_entries(str(current_day))
     _students = ""
     _alumni = ""
@@ -96,7 +102,7 @@ def today():
 
     return render_template(
         "get.html",
-        day_month=DAY_MONTH,
+        day_month=day_month,
         students=_students,
         alumni=_alumni,
         exchangers=_exchangers,
