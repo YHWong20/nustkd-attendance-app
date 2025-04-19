@@ -9,7 +9,10 @@ from datetime import datetime, timezone, timedelta
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)8s: %(message)s"
+)
 
 # Save json credentials locally
 SERVICE_ACCOUNT_JSON = os.environ["SERVICE_ACCOUNT_JSON"]

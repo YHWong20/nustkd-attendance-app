@@ -10,7 +10,10 @@ from src.export import insert_entries
 from src.telegram import send_message
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)8s: %(message)s"
+)
 
 
 @app.route("/", methods=["GET"])

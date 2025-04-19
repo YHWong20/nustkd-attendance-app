@@ -10,7 +10,10 @@ from pymongo.server_api import ServerApi
 from pymongo.errors import DuplicateKeyError
 from src.member import Member
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)8s: %(message)s"
+)
 
 MONGO_URI = os.environ["MONGODB_URI"]
 client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
@@ -67,7 +70,7 @@ def add_entry(name, status):
         assert response.acknowledged
         logging.info("Key %s added!", response.inserted_id)
     except DuplicateKeyError:
-        logging.warning("Duplicate key %s entered - ignoring...", entry['_id'])
+        logging.warning("Duplicate key %s entered - ignoring...", entry["_id"])
     except Exception as e:
         logging.error("Failed to add entry. Error: %s", e)
         raise e
@@ -90,8 +93,16 @@ def get_entries(collection_name):
         for doc in cursor:
             results.append(doc)
 
-        logging.info("Retrieved %s entries from collection %s.", len(results), collection_name)
+        logging.info(
+            "Retrieved %s entries from collection %s.",
+            len(results),
+            collection_name
+        )
         return results
     except Exception as e:
-        logging.error("Failed to get entries from collection %s. Error: %s", collection_name, e)
+        logging.error(
+            "Failed to get entries from collection %s. Error: %s",
+            collection_name,
+            e
+        )
         raise e

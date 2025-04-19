@@ -8,7 +8,10 @@ import openpyxl
 from src.gdrive import download_file, upload_file
 from src.telegram import send_message
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)8s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)8s: %(message)s"
+)
 
 # Row and column numbers of interest in excel template
 DATE_ROW = 8
@@ -78,7 +81,10 @@ def insert_entries(export_date, entries):
     target_column = get_target_column(ws, target_date)
 
     if not target_column:
-        logging.warning("Target column %s not found in Attendance sheet.", target_column)
+        logging.warning(
+            "Target column %s not found in Attendance sheet.",
+            target_column
+        )
         return
 
     attendance_names = list(map(lambda x: x["name"], entries))
@@ -96,11 +102,21 @@ def insert_entries(export_date, entries):
         if len(matching_rows) == 1:
             row_to_update = matching_rows[0]
             ws.cell(row=row_to_update, column=target_column, value=1)
-            logging.info("Marked %s as present on %s (Row %s).", name, target_date, row_to_update)
+            logging.info(
+                "Marked %s as present on %s (Row %s).",
+                name,
+                target_date,
+                row_to_update
+            )
         elif len(matching_rows) > 1:
             # Duplicate name entry
             # TODO: possible utilise member status to de-duplicate names
-            logging.warning("Skipping %s, Found multiple matches: %s", name, matching_rows)
+            logging.warning(
+                "Skipping %s, Found multiple matches: %s",
+                name,
+                matching_rows
+            )
+
             duplicate_names.append(name)
         else:
             # Name not found
