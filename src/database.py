@@ -57,7 +57,7 @@ def add_entry(name, status):
         status (str): Member status.
     """
     collection = get_db_collection()
-    member = Member(name, status)
+    member = Member(name.strip(), status)
 
     entry = {
         "_id": member.member_id,
