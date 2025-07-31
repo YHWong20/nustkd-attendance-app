@@ -19,7 +19,7 @@ LEFT_DATE_LIMIT = 5
 RIGHT_DATE_LIMIT = 14
 NAME_START_ROW = 10
 NAME_COL = 2
-MAX_NAME_ROW = 170
+MAX_NAME_ROW = 149  # w.e.f AY25/26 Aug25 template
 
 
 def get_target_column(ws, export_date):
